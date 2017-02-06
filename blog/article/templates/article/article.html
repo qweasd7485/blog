@@ -1,0 +1,41 @@
+<!doctype html>
+{% load staticfiles %}
+<html>
+<head>
+<title>部落格</title>
+<meta charset="utf-8">
+<link rel="stylesheet" href="{% static '/css/main.css' %}">
+<link rel="stylesheet" href="{% static '/css/article.css' %}">
+</head>
+<body>
+{% include 'main/menu.html' %}
+{% include 'article/searchForm.html' %}
+<h2>歡迎來到我的部落格</h2>
+{% for message in messages %}
+  <p {% if message.tags %} class="{{ message.tags }}" {% endif %}>{{ message }}</p>
+{% endfor %}
+<p class="inlineBlock"><a class="btn" href="{% url 'article:articleCreate' %}">新增文章</a></p>
+<br><br><hr>
+{% for items in itemsList %}
+  {% for item in items %}
+    {% if forloop.first %}
+      <h3 class="inlineBlock"><a href="{% url 'article:articleRead' item.id %}">{{ item.title }}</a></h3>
+      <form class="inlineBlock" method="post" action="{% url 'article:articleDelete' item.id %}">
+      {% csrf_token %}
+      <input class="btn" type="submit" value="刪除">
+      </form>
+      <p>發表時間:{{ item.pubDateTime|date:'Y-m-d H:i' }}</p>
+      <div class=articleContent>{{ item.content|linebreaks|truncatechars_html:30 }}</div>
+      <p>讚:{{ item.likes }}</p>
+    {% else %}
+      <p>
+      <span class=comment>{{ item.content }}</span><br>
+      <span class=commentTime>{{ item.pubDateTime|date:'m 月 d 日 H:i'}}</span>
+      </p>
+    {% endif %}
+  {% endfor %}
+<hr>
+{% endfor %}
+
+</body>
+</html>
